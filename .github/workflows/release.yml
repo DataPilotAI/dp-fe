@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+# Needed to create the release and upload the build as an asset.
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+
+      - name: Package build
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          tar -czf "dp-fe-${TAG}.tar.gz" -C dist .
+          sha256sum "dp-fe-${TAG}.tar.gz" > "dp-fe-${TAG}.tar.gz.sha256"
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: gh release create "$TAG" "dp-fe-${TAG}.tar.gz" "dp-fe-${TAG}.tar.gz.sha256" --title "$TAG" --generate-notes
