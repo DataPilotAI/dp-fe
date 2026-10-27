@@ -8,7 +8,8 @@ function positiveNumber(value: string | undefined, fallback: number): number {
 
 export const API_BASE_URL = (import.meta.env.DP_API_BASE_URL ?? '/api').replace(/\/+$/, '')
 
-export const USE_MOCK_API = import.meta.env.DP_USE_MOCK === 'true'
+// DEV is false in production builds, so a stray DP_USE_MOCK in .env.local can never ship the mock.
+export const USE_MOCK_API = import.meta.env.DEV && import.meta.env.DP_USE_MOCK === 'true'
 
 export const MAX_UPLOAD_BYTES =
     positiveNumber(import.meta.env.DP_MAX_FILE_SIZE_MB, DEFAULT_MAX_UPLOAD_MB) * BYTES_PER_MB

@@ -6,18 +6,18 @@ React + TypeScript UI for DataPilot AI. Upload a data file, chat with DAI about 
 
 ```sh
 npm install
-npm run dev        # http://localhost:5173, uses the mock API (see .env.development)
+npm run local      # http://localhost:5173, uses the mock API (see .env.local)
 ```
 
 No Node on the host? Run it through Docker:
 
 ```sh
-docker run --rm -it -p 5173:5173 -v "$PWD":/app -w /app node:22-alpine sh -c "npm install && npm run dev -- --host"
+docker run --rm -it -p 5173:5173 -v "$PWD":/app -w /app node:22-alpine sh -c "npm install && npm run local -- --host"
 ```
 
 | Script | Purpose |
 | --- | --- |
-| `npm run dev` | Dev server with `/api` proxied to the backend |
+| `npm run local` | Local Vite server with hot reload and `/api` proxied to the backend |
 | `npm run build` | Typecheck and production build into `dist/` |
 | `npm run lint` | oxlint |
 | `npm run typecheck` | `tsc -b` |
@@ -25,14 +25,14 @@ docker run --rm -it -p 5173:5173 -v "$PWD":/app -w /app node:22-alpine sh -c "np
 
 ## Configuration
 
-Copy `.env.example` to `.env.local` to override. `DP_USE_MOCK=true` serves everything from an in-browser mock (`src/api/mock.ts`), so the UI works without a backend. For a real backend set `DP_USE_MOCK=false` and `PROXY_TARGET` (default `http://localhost:8080`).
+Local settings live in `.env.local`, which is git-ignored. Create it with `cp .env.example .env.local`. `DP_USE_MOCK=true` serves everything from an in-browser mock (`src/api/mock.ts`), so the UI works without a backend; it is only honoured by `npm run local`, never by a production build. For a real backend set `DP_USE_MOCK=false` and `PROXY_TARGET` (default `http://localhost:8080`).
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `DP_API_BASE_URL` | `/api` | Base URL the browser calls |
 | `DP_USE_MOCK` | `false` | Use the in-browser mock API |
 | `DP_MAX_FILE_SIZE_MB` | `50` | Client-side upload size limit |
-| `PROXY_TARGET` | `http://localhost:8080` | Dev proxy target for `/api` (server-side only) |
+| `PROXY_TARGET` | `http://localhost:8080` | Local proxy target for `/api` (server-side only) |
 
 ## Backend contract (assumed, adjust in `src/api`)
 
